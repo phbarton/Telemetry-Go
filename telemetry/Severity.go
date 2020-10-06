@@ -1,4 +1,4 @@
-package contracts
+package telemetry
 
 // Severity provides constants for the severity level of a traced statement.
 type Severity int32
