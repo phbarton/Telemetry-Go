@@ -2,6 +2,7 @@ package telemetry
 
 import "github.com/phbarton/Telemetry-Go/telemetry/contracts"
 
+// TraceListener is the interface to be implemented by all implementations for a common tracing capability
 type TraceListener interface {
 	TraceMessage(message string, severity contracts.Severity)
 
