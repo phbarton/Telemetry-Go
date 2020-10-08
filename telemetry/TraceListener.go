@@ -4,16 +4,6 @@ package telemetry
 type TraceListener interface {
 	TraceMessage(message string, severity Severity)
 
-	TraceInformation(message string)
-
-	TraceVerbose(message string)
-
-	TraceWarning(message string)
-
-	TraceError(message string)
-
-	TraceCritical(message string)
-
 	TraceException(err error)
 
 	TrackAvailability(name string) *DurationTrace
@@ -27,4 +17,6 @@ type TraceListener interface {
 	TraceEvent(name string)
 
 	Flush()
+
+	Close()
 }

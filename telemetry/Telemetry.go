@@ -13,36 +13,29 @@ func AddListener(listener *TraceListener) {
 	traceListener = append(traceListener, listener)
 }
 
-// TraceMessage writes a message with the specified severity to the underlying trace listeners
-func TraceMessage(message string, severity Severity) {
-	for _, tl := range traceListener {
-		(*tl).TraceMessage(message, severity)
-	}
-}
-
-// TraceVerbose writes a verbose (typically a debugging) message to the underlyng trace listeners
+// TraceVerbose writes a verbose message (typically for debugging) to the underlyng trace listeners
 func TraceVerbose(message string) {
-	TraceMessage(message, Verbose)
+	traceMessageImpl(message, Verbose)
 }
 
 // TraceInformation writes an informational message to the underlyng trace listeners
 func TraceInformation(message string) {
-	TraceMessage(message, Information)
+	traceMessageImpl(message, Information)
 }
 
 // TraceWarning writes a warning message to the underlyng trace listeners
 func TraceWarning(message string) {
-	TraceMessage(message, Warning)
+	traceMessageImpl(message, Warning)
 }
 
 // TraceError writes an error message to the underlyng trace listeners
 func TraceError(message string) {
-	TraceMessage(message, Error)
+	traceMessageImpl(message, Error)
 }
 
 // TraceCritical writes a critical error message to the underlyng trace listeners
 func TraceCritical(message string) {
-	TraceMessage(message, Critical)
+	traceMessageImpl(message, Critical)
 }
 
 // TraceException traces the specified error to the underlyng trace listeners
@@ -118,12 +111,18 @@ func Close() {
 	traceListener = make([]*TraceListener, 0, 0)
 }
 
+func traceMessageImpl(message string, severity Severity) {
+	for _, tl := range traceListener {
+		(*tl).TraceMessage(message, severity)
+	}
+}
+
 type aggregateDurationTrace struct {
 	traces []*DurationTrace
 }
 
 func newAggregateDurationTrace(tracers []*DurationTrace) DurationTrace {
-	return &(aggregateDurationTrace{traces: tracers})
+	return &aggregateDurationTrace{traces: tracers}
 }
 
 func (atl aggregateDurationTrace) Complete() {
