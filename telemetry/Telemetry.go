@@ -4,62 +4,69 @@ var (
 	traceListener []*TraceListener
 )
 
-type aggregateDurationTrace struct {
-	traces []*DurationTrace
-}
-
 func init() {
 	traceListener = make([]*TraceListener, 0)
 }
 
+// AddListener adds an implementation of the TraceListener interface to the list of all listeners
 func AddListener(listener *TraceListener) {
 	traceListener = append(traceListener, listener)
 }
 
+// TraceMessage writes a message with the specified severity to the underlying trace listeners
 func TraceMessage(message string, severity Severity) {
 	for _, tl := range traceListener {
 		(*tl).TraceMessage(message, severity)
 	}
 }
 
+// TraceVerbose writes a verbose (typically a debugging) message to the underlyng trace listeners
 func TraceVerbose(message string) {
 	TraceMessage(message, Verbose)
 }
 
+// TraceInformation writes an informational message to the underlyng trace listeners
 func TraceInformation(message string) {
 	TraceMessage(message, Information)
 }
 
+// TraceWarning writes a warning message to the underlyng trace listeners
 func TraceWarning(message string) {
 	TraceMessage(message, Warning)
 }
 
+// TraceError writes an error message to the underlyng trace listeners
 func TraceError(message string) {
 	TraceMessage(message, Error)
 }
 
+// TraceCritical writes a critical error message to the underlyng trace listeners
 func TraceCritical(message string) {
 	TraceMessage(message, Critical)
 }
 
+// TraceException traces the specified error to the underlyng trace listeners
 func TraceException(err error) {
 	for _, tl := range traceListener {
 		(*tl).TraceException(err)
 	}
 }
 
+// TraceMetric traces named single-valued metric to the underlyng trace listeners
 func TraceMetric(name string, value float64) {
 	for _, tl := range traceListener {
 		(*tl).TraceMetric(name, value)
 	}
 }
 
+// TraceEvent traces named event to the underlyng trace listeners
 func TraceEvent(name string) {
 	for _, tl := range traceListener {
 		(*tl).TraceEvent(name)
 	}
 }
 
+// TrackAvailability creates a tracking of the availability of the named service
 func TrackAvailability(name string) *DurationTrace {
 	traces := make([]*DurationTrace, 0)
 
@@ -71,6 +78,7 @@ func TrackAvailability(name string) *DurationTrace {
 	return &dt
 }
 
+// TrackRequest creates a tracking of the service request at the specified URI and method
 func TrackRequest(method string, uri string) *DurationTrace {
 	traces := make([]*DurationTrace, 0)
 
@@ -82,6 +90,7 @@ func TrackRequest(method string, uri string) *DurationTrace {
 	return &dt
 }
 
+// TrackDependency creates a tracking of the specified external service dependency
 func TrackDependency(name string, dependencyType string, target string) *DurationTrace {
 	traces := make([]*DurationTrace, 0)
 
@@ -93,10 +102,24 @@ func TrackDependency(name string, dependencyType string, target string) *Duratio
 	return &dt
 }
 
+// Flush causes all trace listeners to flush their data to their respective providers.
 func Flush() {
 	for _, tl := range traceListener {
 		(*tl).Flush()
 	}
+}
+
+// Close closes all trace listeners and removes the references to them.
+func Close() {
+	for _, tl := range traceListener {
+		(*tl).Close()
+	}
+
+	traceListener = make([]*TraceListener, 0, 0)
+}
+
+type aggregateDurationTrace struct {
+	traces []*DurationTrace
 }
 
 func newAggregateDurationTrace(tracers []*DurationTrace) DurationTrace {
