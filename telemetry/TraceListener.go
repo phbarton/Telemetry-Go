@@ -14,13 +14,13 @@ type TraceListener interface {
 
 	TraceCritical(message string)
 
-	TraceException(err interface{})
+	TraceException(err error)
 
-	TraceAvailability(name string) DurationTrace
+	TrackAvailability(name string) *DurationTrace
 
-	TraceRequest(method string, uri string) DurationTrace
+	TrackRequest(method string, uri string) *DurationTrace
 
-	TraceDependency(name string, dependencyType string, target string)
+	TrackDependency(name string, dependencyType string, target string) *DurationTrace
 
 	TraceMetric(name string, value float64)
 
