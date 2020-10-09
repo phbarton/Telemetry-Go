@@ -2,6 +2,7 @@ package console
 
 import (
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/gookit/color"
@@ -21,7 +22,9 @@ func NewConsoleTraceListener(loggingLevel telemetry.Severity) telemetry.TraceLis
 
 func (ctl *consoleTraceListener) TraceMessage(message string, severity telemetry.Severity) {
 	if severity >= ctl.loggingLevel {
-		fmt.Printf("%v %v: %v\n", time.Now().Format(time.StampMilli), getSeverityTag(severity), message)
+		if _, err := fmt.Printf("%v %v: %v\n", time.Now().Format(time.StampMilli), getSeverityTag(severity), message); err != nil {
+			log.Printf("consoleTraceListener.TraceMessage failed: %v", err.Error())
+		}
 	}
 }
 
