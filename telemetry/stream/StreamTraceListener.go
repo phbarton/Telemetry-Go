@@ -14,7 +14,7 @@ type streamTraceListener struct {
 	writer       *io.Writer
 }
 
-// NewStreamTraceListener creates a trace listener which outputs to the console. It limits output based on the logging level supplied
+// NewStreamTraceListener creates a trace listener which outputs to the provided implementation of io.Writer interface. It limits output based on the logging level supplied
 func NewStreamTraceListener(loggingLevel telemetry.Severity, writer *io.Writer) telemetry.TraceListener {
 	traceListener := streamTraceListener{loggingLevel: loggingLevel, writer: writer}
 

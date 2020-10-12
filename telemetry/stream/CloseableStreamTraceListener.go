@@ -12,9 +12,10 @@ type closeableStreamTraceListener struct {
 	writer *io.WriteCloser
 }
 
-// NewCloseableStreamTraceListener creates a trace listener which outputs to the console. It limits output based on the logging level supplied
+// NewCloseableStreamTraceListener creates a trace listener which outputs to the provided implementation of io.WriteCloser interface. It limits output based on the logging level supplied
 func NewCloseableStreamTraceListener(loggingLevel telemetry.Severity, writer *io.WriteCloser) telemetry.TraceListener {
 	var w io.Writer = *writer
+
 	innerListener := NewStreamTraceListener(loggingLevel, &w)
 	traceListener := closeableStreamTraceListener{inner: &innerListener, writer: writer}
 
