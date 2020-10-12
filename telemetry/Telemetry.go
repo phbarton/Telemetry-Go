@@ -104,6 +104,8 @@ func Flush() {
 
 // Close closes all trace listeners and removes the references to them.
 func Close() {
+	Flush()
+
 	for _, tl := range traceListener {
 		(*tl).Close()
 	}
