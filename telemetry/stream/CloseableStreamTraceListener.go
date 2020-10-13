@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"fmt"
 	"io"
 	"log"
 
@@ -28,6 +29,16 @@ func (cstl *closeableStreamTraceListener) TraceMessage(message string, severity 
 
 func (cstl *closeableStreamTraceListener) TraceException(err error) {
 	(*cstl.inner).TraceMessage(err.Error(), telemetry.Error)
+}
+
+func (cstl *closeableStreamTraceListener) TracePanic(rethrow bool) {
+	if r := recover(); r != nil {
+		cstl.TraceMessage(fmt.Sprint(r), telemetry.Critical)
+
+		if rethrow {
+			panic(r)
+		}
+	}
 }
 
 func (cstl *closeableStreamTraceListener) TrackAvailability(name string) *telemetry.DurationTrace {

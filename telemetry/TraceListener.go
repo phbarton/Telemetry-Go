@@ -6,6 +6,8 @@ type TraceListener interface {
 
 	TraceException(err error)
 
+	TracePanic(rethrow bool)
+
 	TrackAvailability(name string) *DurationTrace
 
 	TrackRequest(method string, uri string) *DurationTrace
