@@ -45,6 +45,13 @@ func TraceException(err error) {
 	}
 }
 
+// TracePanic traces any panic error that is thrown. Typically used in a defer statement.
+func TracePanic(rethrow bool) {
+	for _, tl := range traceListener {
+		(*tl).TracePanic(rethrow)
+	}
+}
+
 // TraceMetric traces named single-valued metric to the underlyng trace listeners
 func TraceMetric(name string, value float64) {
 	for _, tl := range traceListener {
