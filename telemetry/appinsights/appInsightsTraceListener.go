@@ -42,6 +42,10 @@ func (aitl *appInsightsTraceListener) TraceException(err error) {
 	aitl.client.Track(track)
 }
 
+func (aitl *appInsightsTraceListener) TracePanic(rethrow bool) {
+	appinsights.TrackPanic(aitl.client, rethrow)
+}
+
 func (aitl *appInsightsTraceListener) TrackAvailability(name string) *telemetry.DurationTrace {
 	trace := newAvailabilityDurationTrace(aitl, name)
 

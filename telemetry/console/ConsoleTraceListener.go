@@ -32,6 +32,16 @@ func (ctl *consoleTraceListener) TraceException(err error) {
 	ctl.TraceMessage(err.Error(), telemetry.Error)
 }
 
+func (ctl *consoleTraceListener) TracePanic(rethrow bool) {
+	if r := recover(); r != nil {
+		ctl.TraceMessage(fmt.Sprint(r), telemetry.Critical)
+
+		if rethrow {
+			panic(r)
+		}
+	}
+}
+
 func (ctl *consoleTraceListener) TrackAvailability(name string) *telemetry.DurationTrace {
 	durationTrace := ctl.newDurationTrace(fmt.Sprintf("AVAILABILITY: %v", name))
 

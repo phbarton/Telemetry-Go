@@ -35,6 +35,16 @@ func (stl *streamTraceListener) TraceException(err error) {
 	stl.TraceMessage(err.Error(), telemetry.Error)
 }
 
+func (stl *streamTraceListener) TracePanic(rethrow bool) {
+	if r := recover(); r != nil {
+		stl.TraceMessage(fmt.Sprint(r), telemetry.Critical)
+
+		if rethrow {
+			panic(r)
+		}
+	}
+}
+
 func (stl *streamTraceListener) TrackAvailability(name string) *telemetry.DurationTrace {
 	durationTrace := stl.newDurationTrace(fmt.Sprintf("AVAILABILITY: %v", name))
 

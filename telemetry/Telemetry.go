@@ -4,13 +4,13 @@ var (
 	traceListener []*TraceListener
 )
 
-func init() {
-	traceListener = make([]*TraceListener, 0)
-}
-
 // AddListener adds an implementation of the TraceListener interface to the list of all listeners
 func AddListener(listener *TraceListener) {
-	traceListener = append(traceListener, listener)
+	if traceListener == nil {
+		traceListener = []*TraceListener{listener}
+	} else {
+		traceListener = append(traceListener, listener)
+	}
 }
 
 // TraceVerbose writes a verbose message (typically for debugging) to the underlyng trace listeners
@@ -40,22 +40,37 @@ func TraceCritical(message string) {
 
 // TraceException traces the specified error to the underlyng trace listeners
 func TraceException(err error) {
-	for _, tl := range traceListener {
-		(*tl).TraceException(err)
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			(*tl).TraceException(err)
+		}
+	}
+}
+
+// TracePanic traces any panic error that is thrown. Typically used in a defer statement.
+func TracePanic(rethrow bool) {
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			(*tl).TracePanic(rethrow)
+		}
 	}
 }
 
 // TraceMetric traces named single-valued metric to the underlyng trace listeners
 func TraceMetric(name string, value float64) {
-	for _, tl := range traceListener {
-		(*tl).TraceMetric(name, value)
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			(*tl).TraceMetric(name, value)
+		}
 	}
 }
 
 // TraceEvent traces named event to the underlyng trace listeners
 func TraceEvent(name string) {
-	for _, tl := range traceListener {
-		(*tl).TraceEvent(name)
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			(*tl).TraceEvent(name)
+		}
 	}
 }
 
@@ -63,8 +78,10 @@ func TraceEvent(name string) {
 func TrackAvailability(name string) *DurationTrace {
 	traces := make([]*DurationTrace, 0)
 
-	for _, tl := range traceListener {
-		traces = append(traces, (*tl).TrackAvailability(name))
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			traces = append(traces, (*tl).TrackAvailability(name))
+		}
 	}
 
 	dt := newAggregateDurationTrace(traces)
@@ -75,8 +92,10 @@ func TrackAvailability(name string) *DurationTrace {
 func TrackRequest(method string, uri string) *DurationTrace {
 	traces := make([]*DurationTrace, 0)
 
-	for _, tl := range traceListener {
-		traces = append(traces, (*tl).TrackRequest(method, uri))
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			traces = append(traces, (*tl).TrackRequest(method, uri))
+		}
 	}
 
 	dt := newAggregateDurationTrace(traces)
@@ -87,8 +106,10 @@ func TrackRequest(method string, uri string) *DurationTrace {
 func TrackDependency(name string, dependencyType string, target string) *DurationTrace {
 	traces := make([]*DurationTrace, 0)
 
-	for _, tl := range traceListener {
-		traces = append(traces, (*tl).TrackDependency(name, dependencyType, target))
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			traces = append(traces, (*tl).TrackDependency(name, dependencyType, target))
+		}
 	}
 
 	dt := newAggregateDurationTrace(traces)
@@ -97,8 +118,10 @@ func TrackDependency(name string, dependencyType string, target string) *Duratio
 
 // Flush causes all trace listeners to flush their data to their respective providers.
 func Flush() {
-	for _, tl := range traceListener {
-		(*tl).Flush()
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			(*tl).Flush()
+		}
 	}
 }
 
@@ -106,16 +129,20 @@ func Flush() {
 func Close() {
 	Flush()
 
-	for _, tl := range traceListener {
-		(*tl).Close()
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			(*tl).Close()
+		}
 	}
 
 	traceListener = make([]*TraceListener, 0, 0)
 }
 
 func traceMessageImpl(message string, severity Severity) {
-	for _, tl := range traceListener {
-		(*tl).TraceMessage(message, severity)
+	if traceListener != nil {
+		for _, tl := range traceListener {
+			(*tl).TraceMessage(message, severity)
+		}
 	}
 }
 
