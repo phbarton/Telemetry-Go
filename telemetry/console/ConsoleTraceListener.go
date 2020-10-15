@@ -1,31 +1,30 @@
 package console
 
 import (
-	"fmt"
-	"log"
-	"time"
+	"io"
+	"os"
 
 	"github.com/gookit/color"
 	"github.com/phbarton/Telemetry-Go/telemetry"
+	"github.com/phbarton/Telemetry-Go/telemetry/stream"
 )
 
 type consoleTraceListener struct {
-	loggingLevel telemetry.Severity
+	inner *telemetry.TraceListener
 }
 
 // NewConsoleTraceListener creates a trace listener which outputs to the console. It limits output based on the logging level supplied
 func NewConsoleTraceListener(loggingLevel telemetry.Severity) telemetry.TraceListener {
-	traceListener := consoleTraceListener{loggingLevel: loggingLevel}
+	var console io.Writer = os.Stdout
+
+	inner := stream.NewStreamTraceListener(loggingLevel, &console)
+	traceListener := consoleTraceListener{inner: &inner}
 
 	return &traceListener
 }
 
 func (ctl *consoleTraceListener) TraceMessage(message string, severity telemetry.Severity) {
-	if severity >= ctl.loggingLevel {
-		if _, err := fmt.Printf("%v %v: %v\n", time.Now().Format(time.StampMilli), getSeverityTag(severity), message); err != nil {
-			log.Printf("consoleTraceListener.TraceMessage failed: %v", err.Error())
-		}
-	}
+	(*ctl.inner).TraceMessage(message, severity)
 }
 
 func (ctl *consoleTraceListener) TraceException(err error) {
@@ -33,39 +32,27 @@ func (ctl *consoleTraceListener) TraceException(err error) {
 }
 
 func (ctl *consoleTraceListener) TracePanic(rethrow bool) {
-	if r := recover(); r != nil {
-		ctl.TraceMessage(fmt.Sprint(r), telemetry.Critical)
-
-		if rethrow {
-			panic(r)
-		}
-	}
+	(*ctl.inner).TracePanic(rethrow)
 }
 
 func (ctl *consoleTraceListener) TrackAvailability(name string) *telemetry.DurationTrace {
-	durationTrace := ctl.newDurationTrace(fmt.Sprintf("AVAILABILITY: %v", name))
-
-	return &durationTrace
+	return (*ctl.inner).TrackAvailability(name)
 }
 
 func (ctl *consoleTraceListener) TrackRequest(method string, uri string) *telemetry.DurationTrace {
-	durationTrace := ctl.newDurationTrace(fmt.Sprintf("REQUEST: %v %v", method, uri))
-
-	return &durationTrace
+	return (*ctl.inner).TrackRequest(method, uri)
 }
 
 func (ctl *consoleTraceListener) TrackDependency(name string, dependencyType string, target string) *telemetry.DurationTrace {
-	durationTrace := ctl.newDurationTrace(fmt.Sprintf("DEPENDENCY: %v (%v) %v", name, dependencyType, target))
-
-	return &durationTrace
+	return (*ctl.inner).TrackDependency(name, dependencyType, target)
 }
 
 func (ctl *consoleTraceListener) TraceMetric(name string, value float64) {
-	ctl.TraceMessage(fmt.Sprintf("METRIC: '%v': %v", name, value), telemetry.Information)
+	(*ctl.inner).TraceMetric(name, value)
 }
 
 func (ctl *consoleTraceListener) TraceEvent(name string) {
-	ctl.TraceMessage(fmt.Sprintf("EVENT: %v", name), telemetry.Verbose)
+	(*ctl.inner).TraceEvent(name)
 }
 
 func (ctl *consoleTraceListener) Flush() {
@@ -74,14 +61,6 @@ func (ctl *consoleTraceListener) Flush() {
 
 func (ctl *consoleTraceListener) Close() {
 	// Unused
-}
-
-func (ctl *consoleTraceListener) newDurationTrace(output string) telemetry.DurationTrace {
-	return &consoleDurationTrace{
-		traceListener: ctl,
-		output:        output,
-		startTime:     time.Now(),
-	}
 }
 
 func getSeverityTag(severity telemetry.Severity) string {

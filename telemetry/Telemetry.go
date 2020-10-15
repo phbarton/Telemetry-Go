@@ -135,7 +135,7 @@ func Close() {
 		}
 	}
 
-	traceListener = make([]*TraceListener, 0, 0)
+	traceListener = nil
 }
 
 func traceMessageImpl(message string, severity Severity) {
