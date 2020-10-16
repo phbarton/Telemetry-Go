@@ -4,7 +4,6 @@ import (
 	"io"
 	"os"
 
-	"github.com/gookit/color"
 	"github.com/phbarton/Telemetry-Go/telemetry"
 	"github.com/phbarton/Telemetry-Go/telemetry/stream"
 )
@@ -61,21 +60,4 @@ func (ctl *consoleTraceListener) Flush() {
 
 func (ctl *consoleTraceListener) Close() {
 	// Unused
-}
-
-func getSeverityTag(severity telemetry.Severity) string {
-	switch severity {
-	case telemetry.Verbose:
-		return color.New(color.FgBlack, color.BgGray).Render("VRB")
-	case telemetry.Information:
-		return color.New(color.FgWhite, color.BgBlue).Render("INF")
-	case telemetry.Warning:
-		return color.New(color.FgWhite, color.BgYellow).Render("WRN")
-	case telemetry.Error:
-		return color.New(color.FgWhite, color.BgRed).Render("ERR")
-	case telemetry.Critical:
-		return color.New(color.FgBlack, color.BgRed).Render("CRT")
-	default:
-		return color.New(color.FgGray).Render("UNK")
-	}
 }
