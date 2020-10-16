@@ -3,7 +3,6 @@ package stream
 import (
 	"fmt"
 	"io"
-	"log"
 	"time"
 
 	"github.com/phbarton/Telemetry-Go/telemetry"
@@ -11,12 +10,12 @@ import (
 
 type streamTraceListener struct {
 	loggingLevel telemetry.Severity
-	writer       *io.Writer
+	channel      *streamTraceListenerChannel
 }
 
 // NewStreamTraceListener creates a trace listener which outputs to the provided implementation of io.Writer interface. It limits output based on the logging level supplied
 func NewStreamTraceListener(loggingLevel telemetry.Severity, writer *io.Writer) telemetry.TraceListener {
-	traceListener := streamTraceListener{loggingLevel: loggingLevel, writer: writer}
+	traceListener := streamTraceListener{loggingLevel: loggingLevel, channel: newStreamTraceListenerChannel(writer)}
 
 	return &traceListener
 }
@@ -25,9 +24,7 @@ func (stl *streamTraceListener) TraceMessage(message string, severity telemetry.
 	if severity >= stl.loggingLevel {
 		entry := fmt.Sprintf("%v [%v]: %v\n", time.Now().Format(time.StampMilli), getSeverityTag(severity), message)
 
-		if _, err := (*stl.writer).Write([]byte(entry)); err != nil {
-			log.Printf("streamTraceListener.TraceMessage failed: %v", err.Error())
-		}
+		stl.channel.Send(entry)
 	}
 }
 
@@ -76,7 +73,12 @@ func (stl *streamTraceListener) Flush() {
 }
 
 func (stl *streamTraceListener) Close() {
-	// Unsused
+	select {
+	case <-stl.channel.Close():
+
+	case <-time.After(30 * time.Second):
+		stl.channel.Stop()
+	}
 }
 
 func (stl *streamTraceListener) newDurationTrace(output string) telemetry.DurationTrace {
