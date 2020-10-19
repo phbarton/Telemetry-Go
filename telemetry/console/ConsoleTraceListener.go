@@ -27,7 +27,7 @@ func (ctl *consoleTraceListener) TraceMessage(message string, severity telemetry
 }
 
 func (ctl *consoleTraceListener) TraceException(err error) {
-	ctl.TraceMessage(err.Error(), telemetry.Error)
+	(*ctl.inner).TraceException(err)
 }
 
 func (ctl *consoleTraceListener) TracePanic(rethrow bool) {
@@ -55,9 +55,9 @@ func (ctl *consoleTraceListener) TraceEvent(name string) {
 }
 
 func (ctl *consoleTraceListener) Flush() {
-	// Unused
+	(*ctl.inner).Flush()
 }
 
 func (ctl *consoleTraceListener) Close() {
-	// Unused
+	(*ctl.inner).Close()
 }

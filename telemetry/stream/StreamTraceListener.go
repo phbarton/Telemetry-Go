@@ -82,6 +82,8 @@ func (stl *streamTraceListener) Close() {
 }
 
 func (stl *streamTraceListener) newDurationTrace(output string) telemetry.DurationTrace {
+	stl.TraceMessage(output, telemetry.Information)
+
 	return &streamDurationTrace{
 		traceListener: stl,
 		output:        output,
