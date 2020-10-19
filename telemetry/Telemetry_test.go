@@ -54,7 +54,7 @@ func TestAddTraceListener(t *testing.T) {
 		t.Log("\tWhen the trace listener is added to the Telemetry")
 		{
 			AddListener(&tl)
-			actualValue := len(traceListener)
+			actualValue := len(traceListeners)
 
 			if actualValue == expectedValue {
 				t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners.", checkMark)
@@ -77,7 +77,7 @@ func TestClose(t *testing.T) {
 		t.Log("\tWhen the trace listener is added to the Telemetry")
 		{
 			AddListener(&tl)
-			actualValue := len(traceListener)
+			actualValue := len(traceListeners)
 
 			if actualValue == expectedValue {
 				t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
@@ -87,7 +87,7 @@ func TestClose(t *testing.T) {
 
 			Close()
 
-			actualAfterCloseValue := len(traceListener)
+			actualAfterCloseValue := len(traceListeners)
 
 			if actualAfterCloseValue == expectedAfterCloseValue {
 				t.Logf("\t\t[%v] There should be no trace listeners in the global list of listeners after closing.", checkMark)
