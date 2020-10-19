@@ -17,7 +17,7 @@ type streamTraceListenerChannel struct {
 // newStreamTraceListenerChannel creates a new instance of the streamTraceListenerChannel and begins listening
 func newStreamTraceListenerChannel(writer *io.Writer) *streamTraceListenerChannel {
 	channel := &streamTraceListenerChannel{
-		emitChannel:    make(chan string),
+		emitChannel:    make(chan string, 10), // Buffered so that we can get some performance boost
 		controlChannel: make(chan *channelStateControl),
 		writer:         writer,
 	}
@@ -56,6 +56,7 @@ func (ch *streamTraceListenerChannel) Stop() {
 // Send puts the message in the channel to be picked up and written to the target
 func (ch *streamTraceListenerChannel) Send(message string) {
 	if ch.emitChannel != nil {
+		ch.waitGroup.Add(1)
 		ch.emitChannel <- message
 	}
 }
@@ -117,19 +118,13 @@ func (ctl *channelState) process() {
 
 // send writes the supplied message to the target
 func (ctl *channelState) send(message string) {
-	// Tell the channel we're doing work
-	ctl.channel.waitGroup.Add(1)
+	// Tell the channel that we're done when we exit the function
+	defer ctl.channel.waitGroup.Done()
 
-	// Spin up a goroutine to actually do the writing
-	go func(message string, writer *io.Writer) {
-		// Tell the channel that we're done when we exit the goroutine
-		defer ctl.channel.waitGroup.Done()
-
-		// Write the message to the target
-		if _, err := (*writer).Write([]byte(message)); err != nil {
-			log.Fatalf("Unexpected error when writing message to target: %v", err.Error())
-		}
-	}(message, ctl.channel.writer)
+	// Write the message to the target
+	if _, err := (*ctl.channel.writer).Write([]byte(message)); err != nil {
+		log.Fatalf("Unexpected error when writing message to target: %v", err.Error())
+	}
 }
 
 // stop closes all channels and returns when all messages have been written
