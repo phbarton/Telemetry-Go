@@ -6,6 +6,10 @@ import (
 	"sync"
 )
 
+const (
+	bufferSize int = 10
+)
+
 // streamTraceListenerChannel is a complex channel that allows for async send of messages, and control of the channel.
 type streamTraceListenerChannel struct {
 	emitChannel    chan string
@@ -17,7 +21,7 @@ type streamTraceListenerChannel struct {
 // newStreamTraceListenerChannel creates a new instance of the streamTraceListenerChannel and begins listening
 func newStreamTraceListenerChannel(writer *io.Writer) *streamTraceListenerChannel {
 	channel := &streamTraceListenerChannel{
-		emitChannel:    make(chan string, 10), // Buffered so that we can get some performance boost
+		emitChannel:    make(chan string, bufferSize), // Buffered so that we can get some performance boost
 		controlChannel: make(chan *channelStateControl),
 		writer:         writer,
 	}
@@ -56,6 +60,7 @@ func (ch *streamTraceListenerChannel) Stop() {
 // Send puts the message in the channel to be picked up and written to the target
 func (ch *streamTraceListenerChannel) Send(message string) {
 	if ch.emitChannel != nil {
+		// Notify the waitgroup of the work beforehand so that we track the amount of work in the buffer.
 		ch.waitGroup.Add(1)
 		ch.emitChannel <- message
 	}
