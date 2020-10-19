@@ -1,4 +1,4 @@
-name: Run Gosec
+name: "Security Analysis"
 
 on:
   push:
