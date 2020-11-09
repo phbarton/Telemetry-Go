@@ -101,6 +101,7 @@ func TestClose(t *testing.T) {
 func TestEnsureTraceVerboseDataIsPassedToListener(t *testing.T) {
 	expectedMessage := "Message"
 	expectedSeverity := Verbose
+	expectedValue := 1
 
 	defer Close()
 
@@ -110,6 +111,13 @@ func TestEnsureTraceVerboseDataIsPassedToListener(t *testing.T) {
 		rtl := newRecordingTraceListener(info)
 
 		AddListener(&rtl)
+		actualValue := len(traceListeners)
+
+		if actualValue == expectedValue {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedValue, actualValue)
+		}
 
 		t.Log("\tWhen a verbose trace message is sent")
 		{
@@ -129,6 +137,7 @@ func TestEnsureTraceVerboseDataIsPassedToListener(t *testing.T) {
 func TestEnsureTraceInformationDataIsPassedToListener(t *testing.T) {
 	expectedMessage := "Message"
 	expectedSeverity := Information
+	expectedValue := 1
 
 	defer Close()
 
@@ -138,6 +147,13 @@ func TestEnsureTraceInformationDataIsPassedToListener(t *testing.T) {
 		rtl := newRecordingTraceListener(info)
 
 		AddListener(&rtl)
+		actualValue := len(traceListeners)
+
+		if actualValue == expectedValue {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedValue, actualValue)
+		}
 
 		t.Log("\tWhen a information trace message is sent")
 		{
@@ -157,6 +173,7 @@ func TestEnsureTraceInformationDataIsPassedToListener(t *testing.T) {
 func TestEnsureTraceWarningDataIsPassedToListener(t *testing.T) {
 	expectedMessage := "Message"
 	expectedSeverity := Warning
+	expectedValue := 1
 
 	defer Close()
 
@@ -166,6 +183,13 @@ func TestEnsureTraceWarningDataIsPassedToListener(t *testing.T) {
 		rtl := newRecordingTraceListener(info)
 
 		AddListener(&rtl)
+		actualValue := len(traceListeners)
+
+		if actualValue == expectedValue {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedValue, actualValue)
+		}
 
 		t.Log("\tWhen a warning trace message is sent")
 		{
@@ -185,6 +209,7 @@ func TestEnsureTraceWarningDataIsPassedToListener(t *testing.T) {
 func TestEnsureTraceErrorDataIsPassedToListener(t *testing.T) {
 	expectedMessage := "Message"
 	expectedSeverity := Error
+	expectedValue := 1
 
 	defer Close()
 
@@ -194,6 +219,13 @@ func TestEnsureTraceErrorDataIsPassedToListener(t *testing.T) {
 		rtl := newRecordingTraceListener(info)
 
 		AddListener(&rtl)
+		actualValue := len(traceListeners)
+
+		if actualValue == expectedValue {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedValue, actualValue)
+		}
 
 		t.Log("\tWhen a error trace message is sent")
 		{
@@ -213,6 +245,7 @@ func TestEnsureTraceErrorDataIsPassedToListener(t *testing.T) {
 func TestEnsureTraceCriticalDataIsPassedToListener(t *testing.T) {
 	expectedMessage := "Message"
 	expectedSeverity := Critical
+	expectedValue := 1
 
 	defer Close()
 
@@ -222,6 +255,13 @@ func TestEnsureTraceCriticalDataIsPassedToListener(t *testing.T) {
 		rtl := newRecordingTraceListener(info)
 
 		AddListener(&rtl)
+		actualValue := len(traceListeners)
+
+		if actualValue == expectedValue {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedValue, actualValue)
+		}
 
 		t.Log("\tWhen a critical trace message is sent")
 		{
@@ -240,6 +280,7 @@ func TestEnsureTraceCriticalDataIsPassedToListener(t *testing.T) {
 
 func TestEnsureTraceExceptionDataIsPassedToListener(t *testing.T) {
 	expectedMessage := "Message"
+	expectedValue := 1
 
 	defer Close()
 
@@ -250,6 +291,13 @@ func TestEnsureTraceExceptionDataIsPassedToListener(t *testing.T) {
 		err := &testError{err: expectedMessage}
 
 		AddListener(&rtl)
+		actualValue := len(traceListeners)
+
+		if actualValue == expectedValue {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedValue, actualValue)
+		}
 
 		t.Log("\tWhen a exception trace message is sent")
 		{
@@ -267,6 +315,7 @@ func TestEnsureTraceExceptionDataIsPassedToListener(t *testing.T) {
 
 func TestEnsureTracePanicDataIsPassedToListener(t *testing.T) {
 	expectedValue := true
+	expectedCount := 1
 
 	defer Close()
 
@@ -276,6 +325,13 @@ func TestEnsureTracePanicDataIsPassedToListener(t *testing.T) {
 		rtl := newRecordingTraceListener(info)
 
 		AddListener(&rtl)
+		actualCount := len(traceListeners)
+
+		if actualCount == expectedCount {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedCount, actualCount)
+		}
 
 		t.Log("\tWhen a exception trace message is sent")
 		{
@@ -294,6 +350,7 @@ func TestEnsureTracePanicDataIsPassedToListener(t *testing.T) {
 func TestEnsureTraceMetricDataIsPassedToListener(t *testing.T) {
 	expectedName := "Name"
 	expectedValue := 3.1415
+	expectedCount := 1
 
 	defer Close()
 
@@ -303,6 +360,13 @@ func TestEnsureTraceMetricDataIsPassedToListener(t *testing.T) {
 		rtl := newRecordingTraceListener(info)
 
 		AddListener(&rtl)
+		actualCount := len(traceListeners)
+
+		if actualCount == expectedCount {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedCount, actualCount)
+		}
 
 		t.Log("\tWhen a metric trace message is sent")
 		{
@@ -321,6 +385,7 @@ func TestEnsureTraceMetricDataIsPassedToListener(t *testing.T) {
 
 func TestEnsureTraceEventDataIsPassedToListener(t *testing.T) {
 	expectedName := "Name"
+	expectedValue := 1
 
 	defer Close()
 
@@ -330,6 +395,13 @@ func TestEnsureTraceEventDataIsPassedToListener(t *testing.T) {
 		rtl := newRecordingTraceListener(info)
 
 		AddListener(&rtl)
+		actualValue := len(traceListeners)
+
+		if actualValue == expectedValue {
+			t.Logf("\t\t[%v] There should only be one trace listener in the global list of listeners", checkMark)
+		} else {
+			t.Fatalf("\t\t[%v] There should only be one trace listener in the global list of listeners. Expected: %v, Actual: %v", ballotX, expectedValue, actualValue)
+		}
 
 		t.Log("\tWhen a event trace message is sent")
 		{
