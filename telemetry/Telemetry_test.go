@@ -703,7 +703,7 @@ func TestEnsureDurationTraceIsTransferringAvailabilityData(t *testing.T) {
 
 func TestEnsureDurationTraceIsTransferringRequestData(t *testing.T) {
 	expectedMethod := "GET"
-	expectedUri := "/api/example"
+	expectedURI := "/api/example"
 	expectedValue := 1
 
 	defer Close()
@@ -724,7 +724,7 @@ func TestEnsureDurationTraceIsTransferringRequestData(t *testing.T) {
 
 		t.Log("\tWhen a TrackRequest message is sent")
 		{
-			TrackRequest(expectedMethod, expectedUri)
+			TrackRequest(expectedMethod, expectedURI)
 
 			if trace.method == expectedMethod {
 				t.Logf("\t\t[%v] The duration trace method is set correctly.", checkMark)
@@ -732,10 +732,10 @@ func TestEnsureDurationTraceIsTransferringRequestData(t *testing.T) {
 				t.Errorf("\t\t[%v] The duration trace method is set correctly. Expected: '%v', Actual: '%v'", ballotX, expectedMethod, trace.method)
 			}
 
-			if trace.uri == expectedUri {
+			if trace.uri == expectedURI {
 				t.Logf("\t\t[%v] The duration trace URI is set correctly.", checkMark)
 			} else {
-				t.Errorf("\t\t[%v] The duration trace URI is set correctly. Expected: '%v', Actual: '%v'", ballotX, expectedUri, trace.uri)
+				t.Errorf("\t\t[%v] The duration trace URI is set correctly. Expected: '%v', Actual: '%v'", ballotX, expectedURI, trace.uri)
 			}
 		}
 	}
