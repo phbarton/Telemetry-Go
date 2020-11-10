@@ -88,6 +88,8 @@ func (stl *streamTraceListener) newDurationTrace(output string) telemetry.Durati
 		traceListener: stl,
 		output:        output,
 		startTime:     time.Now(),
+		statusCode:    "Incomplete",
+		success:       false,
 	}
 }
 

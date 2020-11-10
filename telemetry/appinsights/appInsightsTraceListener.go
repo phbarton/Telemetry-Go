@@ -93,18 +93,22 @@ func (aitl *appInsightsTraceListener) Close() {
 
 func newAvailabilityDurationTrace(aitl *appInsightsTraceListener, name string) telemetry.DurationTrace {
 	return &applicationInsightsAvailabilityDurationTrace{
-		client:    &aitl.client,
-		name:      name,
-		startTime: time.Now(),
+		client:     &aitl.client,
+		name:       name,
+		startTime:  time.Now(),
+		success:    false,
+		statusCode: "Incomplete",
 	}
 }
 
 func newRequestDurationTrace(aitl *appInsightsTraceListener, method, uri string) telemetry.DurationTrace {
 	return &applicationInsightsRequestDurationTrace{
-		client:    &aitl.client,
-		method:    method,
-		uri:       uri,
-		startTime: time.Now(),
+		client:     &aitl.client,
+		method:     method,
+		uri:        uri,
+		startTime:  time.Now(),
+		success:    false,
+		statusCode: "Incomplete",
 	}
 }
 
@@ -115,6 +119,8 @@ func newDependencyDurationTrace(aitl *appInsightsTraceListener, name, dependency
 		dependencyType: dependencyType,
 		target:         target,
 		startTime:      time.Now(),
+		success:        false,
+		statusCode:     "Incomplete",
 	}
 }
 
